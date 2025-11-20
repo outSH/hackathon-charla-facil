@@ -6,28 +6,7 @@ from pydantic import BaseModel, Field
 from charla_facil.tools.practice_words import get_practice_words
 from charla_facil.util import retry_config
 
-
-class QuizItem(BaseModel):
-    spanish_word: str = Field(...,
-                              description="The word or sentence in Spanish")
-    english_translation: str = Field(...,
-                                     description="The correct English translation")
-    difficulty: str = Field(..., description="easy, medium, or hard")
-
-
-class QuizBatch(BaseModel):
-    topic: str
-    items: List[QuizItem]
-
-
-word_repetition_agent = Agent(
-    name="word_repetition_agent",
-    model=Gemini(
-        model="gemini-2.5-flash",
-        retry_options=retry_config
-    ),
-    description="Agent for reviewing and practicing weak words only",
-    instruction=f"""You are the "Curriculum Specialist," a strict backend agent responsible for generating high-quality Spanish vocabulary exercises.
+prompt = """You are the "Curriculum Specialist," a strict backend agent responsible for generating high-quality Spanish vocabulary exercises.
 
 ### 🎯 Objective
 Generate a structured JSON object containing vocabulary words, their correct English translations, and difficulty levels based on a requested topic.
@@ -52,7 +31,30 @@ You will receive a string input representing a **Topic** (e.g., "Kitchen items",
 ### ⛔ Constraints
 - **DO NOT** chat with the user.
 - **DO NOT** output conversational text.
-- **ONLY** output the JSON object.""",
+- **ONLY** output the JSON object."""
+
+
+class QuizItem(BaseModel):
+    spanish_word: str = Field(...,
+                              description="The word or sentence in Spanish")
+    english_translation: str = Field(...,
+                                     description="The correct English translation")
+    difficulty: str = Field(..., description="easy, medium, or hard")
+
+
+class QuizBatch(BaseModel):
+    topic: str
+    items: List[QuizItem]
+
+
+word_repetition_agent = Agent(
+    name="word_repetition_agent",
+    model=Gemini(
+        model="gemini-2.5-flash",
+        retry_options=retry_config
+    ),
+    description="Agent for reviewing and practicing weak words only",
+    instruction=prompt,
     tools=[FunctionTool(get_practice_words)],
     output_schema=QuizBatch,
 )
