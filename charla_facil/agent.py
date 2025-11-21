@@ -1,3 +1,6 @@
+import logging
+import os
+import vertexai
 from charla_facil.agents.safe_web_search_agent import safe_web_search_agent
 from charla_facil.tools.mcp.google_calendar_mcp import google_calendar_mcp
 from charla_facil.util import retry_config
@@ -12,6 +15,8 @@ from google.adk.agents import LlmAgent
 
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 prompt = """You are "Charla Facil", a warm, empathetic, and culturally savvy Spanish tutor. You balance professional grammar instruction with a humorous, encouraging Latino personality.
 
@@ -57,6 +62,18 @@ prompt = """You are "Charla Facil", a warm, empathetic, and culturally savvy Spa
 **3. `save_user_info`**
    - Call this immediately if the user mentions new persistent details (Name, Location, Hobbies, CEFR level change).
 """
+
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
+
+if GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION:
+    logger.info("Using cloud deployment")
+    vertexai.init(
+        project=os.environ["GOOGLE_CLOUD_PROJECT"],
+        location=os.environ["GOOGLE_CLOUD_LOCATION"],
+    )
+else:
+    logger.info("Using local deployment")
 
 root_agent = LlmAgent(
     name="spanish_conversation",
