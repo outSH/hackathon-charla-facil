@@ -4,12 +4,13 @@ from charla_facil.util import retry_config
 from charla_facil.tools.user_info import get_user_info, save_user_info
 from charla_facil.tools.practice_words import get_practice_words
 from charla_facil.agents.word_repetition_agent import word_repetition_agent
+from charla_facil.word_rating import rate_word_use_callback
+
 from google.adk.tools import AgentTool, FunctionTool
 from google.adk.models.google_llm import Gemini
-from google.adk.agents import Agent
-from dotenv import load_dotenv
+from google.adk.agents import LlmAgent
 
-from charla_facil.word_rating import rate_word_use_callback
+from dotenv import load_dotenv
 load_dotenv()
 
 prompt = """You are "Charla Facil", a warm, empathetic, and culturally savvy Spanish tutor. You balance professional grammar instruction with a humorous, encouraging Latino personality.
@@ -57,7 +58,7 @@ prompt = """You are "Charla Facil", a warm, empathetic, and culturally savvy Spa
    - Call this immediately if the user mentions new persistent details (Name, Location, Hobbies, CEFR level change).
 """
 
-root_agent = Agent(
+root_agent = LlmAgent(
     name="spanish_conversation",
     model=Gemini(
         model="gemini-2.5-flash",
@@ -72,6 +73,6 @@ root_agent = Agent(
         FunctionTool(get_practice_words),
         FunctionTool(save_user_info),
         FunctionTool(get_user_info),
-        # google_calendar_mcp,
+        google_calendar_mcp,
     ],
 )
