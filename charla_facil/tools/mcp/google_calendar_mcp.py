@@ -1,6 +1,7 @@
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
 from mcp import StdioServerParameters
+from pathlib import Path
 
 google_calendar_mcp = McpToolset(
     connection_params=StdioConnectionParams(
@@ -11,7 +12,7 @@ google_calendar_mcp = McpToolset(
                 "@cocal/google-calendar-mcp",
             ],
             env={
-                "GOOGLE_OAUTH_CREDENTIALS": "F:\Media\Dokumenty\github\hackathon-charla-facil\charla_facil\gcp-oauth.keys.json"
+                "GOOGLE_OAUTH_CREDENTIALS": str(Path(__file__).resolve().parents[2] / "gcp-oauth.keys.json")
             }
         ),
         timeout=30,

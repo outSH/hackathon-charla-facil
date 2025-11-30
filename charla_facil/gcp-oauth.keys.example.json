@@ -1,0 +1,7 @@
+{
+    "installed": {
+        "client_id": "__CLIENT_ID__",
+        "client_secret": "__CLIENT_SECRET__",
+        "redirect_uris": ["http://localhost:3000/oauth2callback"]
+    }
+}
